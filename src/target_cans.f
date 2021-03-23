@@ -118,3 +118,54 @@ c      targlen=3.942*2.54        ! target length (cm)
         return
         end
 ***************************************************************        
+c Added by Jixie for polorized he3 target, no target chamber 
+c ignorring particle's raster position, assume it is 0 
+      subroutine he3targ2019(z,th,rad_len,targlen,musc_len)
+      implicit none
+C calculate radiation length traversed by scattered particle
+C Target geometry for 40 cm long He3 gas cell
+C Inputs:
+      real*8 z       ! z position in target
+      real*8 th      ! scattering angle (radians)
+      real*8 rad_len ! radiation length of target in cm
+      real*8 targlen ! full length of target in cm
+C Cell properties
+      real*8 ecir,ecor,entec
+      real*8 twall
+C calculated stuff
+      real*8 tcm,tgas,tal
+C Output:
+      real*8 musc_len ! radiation length traversed by scattered particle
+
+C This cell is a cylinder with a round end. Wall thickness = 1.5 mm
+C The window thickness is about 0.14 mm
+C Some dimensions are hardwired for now (or forever...).
+      ecir=0.87*2.54           ! endcap inner radius (cm)
+      ecor=ecor+0.014          ! endcap outer radius (cm)
+      
+      entec=targlen-ecir       ! entrance to end cap (cm)
+
+      twall = 0.15/7.04        ! rad length of GE180 wall is 7.04 cm
+      tcm=z+targlen/2.0        ! length of target already traversed in cm
+
+      if((tcm+ecir/tan(th)) .lt. entec) then  ! e goes through sidewall
+          tgas=ecir/sin(th)/rad_len   ! rad length of gaseous target the particle will go thru
+          tal=twall/sin(th)           ! wall material the particle will go thru
+        else  ! e goes throught end cap
+          tgas=                          ! gas   
+     >     (sqrt(ecir**2-((targlen-ecir-tcm)*sin(th))**2)
+     >    +(targlen-ecir-tcm)*cos(th))/rad_len ! gaseous target
+
+          tal=                           ! wall
+     >    +(sqrt(ecor**2-((targlen-ecir-tcm)*sin(th))**2)
+     >    -sqrt(ecir**2-((targlen-ecir-tcm)*sin(th))**2))
+     >    *twall/(ecor-ecir)             ! & end cap
+        endif
+
+C outside the target cell, there is about 44cm helium4 gas and ~2mm nylon helium bag
+C the rad. length of nylon is about 35.0cm 
+        musc_len = tgas+tal + 44./5.671E5 + 0.2/35.0 
+
+        return
+        end
+***************************************************************        

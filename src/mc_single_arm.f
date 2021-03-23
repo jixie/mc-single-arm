@@ -612,7 +612,9 @@ C Choices:
 C 1. cryocylinder: Basic cylinder(2.65 inches diameter --> 3.37 cm radius) w/flat exit window (5 mil Al)
 C 2. cryotarg2017: Cylinder (1.32 inches radisu)  with curved exit window (same radius) 5 mil sides/exit
 C 3. Tuna can: shaped like a tuna can - 4 cm diameter (usually)  - 5 mil window. 
-	  if (gen_lim(6).gt.3.) then ! anything longer than 3 cm assumed to be cryotarget
+	  if (gen_lim(6).gt.35.) then ! anything longer than 35 cm assumed to be helium3 gaseous target
+	    call he3targ2019(z,th_ev,rad_len_cm,gen_lim(6),musc_targ_len)
+	  elseif (gen_lim(6).gt.3.) then ! anything longer than 3 cm assumed to be cryotarget
 c	    call cryotuna(z,th_ev,rad_len_cm,gen_lim(6),musc_targ_len)
 c	    call cryocylinder(z,th_ev,rad_len_cm,gen_lim(6),musc_targ_len)
 	     call cryotarg2017(z,th_ev,rad_len_cm,gen_lim(6),musc_targ_len)
@@ -624,7 +626,7 @@ C Simple solid target
 	       musc_targ_len = abs(foil_tk/2. - (z-foil_zcent))/rad_len_cm/cos_ev
 	    endif
 	 endif
-!Jixie: the above 'musc_targ_len' did not consider the target radius, therefore it might not work for long target
+!Jixie: the above 'musc_targ_len' did not consider raster position, therefore it might not work for long target
 !       It also not work well for multiple-foil-target   
 
 C Scattering before magnets:  Approximate all scattering as occuring AT TARGET.
@@ -636,6 +638,7 @@ C  10 mil Al s (X0=8.89cm)
 
 C  HMS
 C  20 mil Al scattering chamber window (X0=8.89cm)
+
 C  24.61 cm air (X0=30420cm)
 C spectrometer entrance window
 C  15 mil Kevlar (X0=74.6 cm)
@@ -648,8 +651,12 @@ C   5 mil Mylar (X0=28.7 cm)
 	     musc_targ_len = musc_targ_len + .020*2.54/8.89 +
      >          24.61/30420. +  .015*2.54/74.6 + .005*2.54/28.7
 	  endif
-
-c
+	  
+C By jixie:  subtract the 20 mil Aluminum scattering chamber window for helium3 target
+      if (gen_lim(6).gt.35.) then
+	    musc_targ_len = musc_targ_len - 0.020*2.54/8.89
+      endif 
+	  
 	  if (ms_flag ) call musc(m2,p_spec*(1.+dpp_s/100.),
      > musc_targ_len,dydz_s,dxdz_s)
 
@@ -696,7 +703,7 @@ c            if (ok_spec) spec(58) =1.
 	     call mc_hms(p_spec, th_spec, dpp_s, x_s, y_s, z_s, 
      >          dxdz_s, dydz_s,
      >          x_fp, dx_fp, y_fp, dy_fp, m2,
-     >          ms_flag, wcs_flag, decay_flag, resmult, fry, ok_spec, 
+     >          ms_flag, wcs_flag, decay_flag, resmult, xtar_init, ok_spec, 
      >          pathlen)
 	  else
 	     write(6,*) 'Unknown spectrometer! Stopping..'

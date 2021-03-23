@@ -159,16 +159,16 @@ C Wire plane positions, construct hdc_zpos array using these parameters
 	parameter (hdc_del_plane = hdc_thick + hdc_wire_thick + hdc_cath_thick)
 	parameter (hdc_1_left  =  26.0)
 	parameter (hdc_1_right = -26.0)
-	parameter (hdc_1y_offset = 1.443)     ! changed to match hdc.pos.nov95
+	parameter (hdc_1y_offset = 0.0)       ! changed for A1N|D2N
 	parameter (hdc_1_top   = -56.5)
 	parameter (hdc_1_bot   =  56.5)
-	parameter (hdc_1x_offset = 1.670)
+	parameter (hdc_1x_offset = 2.2)       ! changed for A1N|D2N
 	parameter (hdc_2_left  =  26.0)
 	parameter (hdc_2_right = -26.0)
-	parameter (hdc_2y_offset = 2.753)     !changed as above,on 03/03,DD
+	parameter (hdc_2y_offset = 0.0)       ! changed for A1N|D2N
 	parameter (hdc_2_top   = -56.5)
 	parameter (hdc_2_bot   =  56.5)
-	parameter (hdc_2x_offset = 2.758)
+	parameter (hdc_2x_offset = 2.2)       ! changed for A1N|D2N
 
 C Aerogel positions and thicknesses
 	real*8 haer_zentrance,haer_zexit
